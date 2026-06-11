@@ -22,10 +22,12 @@ const DEMO_USERS = [
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // Demo credentials provider
     CredentialsProvider({
-      name: 'credentials',
+      id: 'demo-credentials',
+      name: 'Demo credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email:    { label: 'Email',    type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -35,7 +37,37 @@ export const authOptions: NextAuthOptions = {
         );
         if (!user) return null;
         const { password: _, ...safe } = user;
-        return safe;
+        return { ...safe, authMethod: 'demo' };
+      },
+    }),
+    // Workday OAuth provider — tokens pre-validated by /api/workday-auth/callback
+    CredentialsProvider({
+      id: 'workday-oauth',
+      name: 'Workday',
+      credentials: {
+        workdayToken:   { label: 'Workday access token', type: 'text' },
+        workdayUser:    { label: 'Workday user JSON',    type: 'text' },
+        workdayTenant:  { label: 'Workday tenant',       type: 'text' },
+        workdayBaseUrl: { label: 'Workday base URL',     type: 'text' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.workdayToken || !credentials?.workdayUser) return null;
+        try {
+          const user = JSON.parse(credentials.workdayUser);
+          return {
+            id:          user.sub ?? 'workday-user',
+            name:        user.name ?? user.preferred_username ?? 'Workday User',
+            email:       user.email ?? '',
+            role:        'client' as const,
+            projectIds:  [] as string[],      // populated from Workday on first project load
+            authMethod:  'workday',
+            accessToken: credentials.workdayToken,
+            tenant:      credentials.workdayTenant,
+            apiBaseUrl:  credentials.workdayBaseUrl,
+          };
+        } catch {
+          return null;
+        }
       },
     }),
   ],
@@ -43,17 +75,27 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as typeof DEMO_USERS[0]).id;
-        token.role = (user as typeof DEMO_USERS[0]).role;
-        token.projectIds = (user as typeof DEMO_USERS[0]).projectIds;
+        const u = user as unknown as Record<string, unknown>;
+        token.id          = u.id;
+        token.role        = u.role;
+        token.projectIds  = u.projectIds;
+        token.authMethod  = u.authMethod;
+        token.accessToken = u.accessToken;
+        token.tenant      = u.tenant;
+        token.apiBaseUrl  = u.apiBaseUrl;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as Record<string, unknown>).id = token.id;
-        (session.user as Record<string, unknown>).role = token.role;
-        (session.user as Record<string, unknown>).projectIds = token.projectIds;
+        const u = session.user as Record<string, unknown>;
+        u.id          = token.id;
+        u.role        = token.role;
+        u.projectIds  = token.projectIds;
+        u.authMethod  = token.authMethod;
+        u.accessToken = token.accessToken;
+        u.tenant      = token.tenant;
+        u.apiBaseUrl  = token.apiBaseUrl;
       }
       return session;
     },
