@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Canvas design tokens */
+:root {
+  --canvas-blueberry-100: #daeefe;
+  --canvas-blueberry-200: #aacff5;
+  --canvas-blueberry-400: #0875e1;
+  --canvas-blueberry-500: #005cb9;
+
+  --canvas-sourpatch-100: #d4f5de;
+  --canvas-sourpatch-400: #0db442;
+  --canvas-sourpatch-500: #067d2c;
+
+  --canvas-cantaloupe-100: #fff0c8;
+  --canvas-cantaloupe-400: #f5a623;
+  --canvas-cantaloupe-500: #c97d0d;
+
+  --canvas-cinnamon-100: #fee5e5;
+  --canvas-cinnamon-400: #de2020;
+  --canvas-cinnamon-500: #a40000;
+
+  --canvas-licorice-200: #e8edf2;
+  --canvas-licorice-300: #c5cdd6;
+  --canvas-licorice-400: #768494;
+  --canvas-licorice-500: #4a5568;
+  --canvas-licorice-600: #243040;
+
+  --canvas-soap-100: #ffffff;
+  --canvas-soap-200: #f9f9f9;
+  --canvas-soap-300: #f0f3f5;
+
+  --canvas-nav-bg: #243040;
+
+  --radius-md: 4px;
+  --radius-pill: 999px;
+
+  --font-body: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+@theme inline {
+  --color-canvas-blue: var(--canvas-blueberry-400);
+  --color-canvas-blue-dark: var(--canvas-blueberry-500);
+  --color-canvas-blue-light: var(--canvas-blueberry-100);
+  --color-canvas-green: var(--canvas-sourpatch-400);
+  --color-canvas-amber: var(--canvas-cantaloupe-400);
+  --color-canvas-red: var(--canvas-cinnamon-400);
+  --color-canvas-text: var(--canvas-licorice-600);
+  --color-canvas-text-2: var(--canvas-licorice-500);
+  --color-canvas-text-3: var(--canvas-licorice-400);
+  --color-canvas-border: var(--canvas-licorice-200);
+  --color-canvas-bg: var(--canvas-soap-300);
+  --color-canvas-surface: var(--canvas-soap-100);
+  --color-canvas-nav: var(--canvas-nav-bg);
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--canvas-soap-300);
+  color: var(--canvas-licorice-600);
+  font-size: 14px;
+}
